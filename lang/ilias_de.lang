@@ -1,0 +1,15 @@
+//
+// Copyright (c) 2017 Institut fuer Lern-Innovation, Friedrich-Alexander-Universitaet Erlangen-Nuernberg
+// GPLv3, see LICENSE
+//
+// @author Fred Neumann <fred.neumann@fau.de>
+// @version $Id$
+//
+
+<!-- language file start -->
+job_title#:#Test-Archivierung
+job_description#:#Führt geplante Test-Archivierungen aus. Dazu muss das Plugin TestArchiveCreator installiert und aktiviert sein.
+message_creator_plugin_missing#:#Bitte installieren und aktivieren Sie das zuerst das Plugin TestArchiveCreator (https://github.com/ilifau/TestArchiveCreator)!
+no_archive_created#:#Kein Archiv erzeugt
+one_archive_created#:#1 Archiv erzeugt
+x_archives_created#:#%s Archive erzeugt

@@ -1,0 +1,15 @@
+//
+// Copyright (c) 2017 Institut fuer Lern-Innovation, Friedrich-Alexander-Universitaet Erlangen-Nuernberg
+// GPLv3, see LICENSE
+//
+// @author Fred Neumann <fred.neumann@fau.de>
+// @version $Id$
+//
+
+<!-- language file start -->
+job_title#:#Test Archive Creation
+job_description#:#Executes planned creations of test archives. This requires the plugin TestArchiveCreator.
+message_creator_plugin_missing#:#Please install and activete the plugin TestArchiveCreator (https://github.com/ilifau/TestArchiveCreator) first!
+no_archive_created#:#No archive created.
+one_archive_created#:#1 archive created.
+x_archives_created#:#%s archives created.
