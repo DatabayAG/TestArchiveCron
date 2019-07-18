@@ -13,3 +13,6 @@ message_creator_plugin_missing#:#Bitte installieren und aktivieren Sie das zuers
 no_archive_created#:#Kein Archiv erzeugt
 one_archive_created#:#1 Archiv erzeugt
 x_archives_created#:#%s Archive erzeugt
+set_last_run#:#Setze letzten Durchlauf
+set_last_run_info#:#Der nächste Start wird ausgehend vom letzten Durchlauf anhand des Zeitplans bestimmt
+last_run#:#Letzter Durchlauf
