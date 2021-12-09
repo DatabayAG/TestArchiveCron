@@ -84,33 +84,26 @@ class ilTestArchiveCronJob  extends ilCronJob
 		}
 		else
 		{
-			try
-			{
-				/** @var ilTestArchiveCreatorPlugin $creatorPlugin */
-				$creatorPlugin = $this->plugin->getCreatorPlugin();
-				$number = $creatorPlugin->handleCronJob();
-				if ($number == 0)
-				{
-					$result->setStatus(ilCronJobResult::STATUS_NO_ACTION);
-					$result->setMessage($this->plugin->txt('no_archive_created'));
-				}
-				elseif ($number == 1)
-				{
-					$result->setStatus(ilCronJobResult::STATUS_OK);
-					$result->setMessage($this->plugin->txt('one_archive_created'));
+            /** @var ilTestArchiveCreatorPlugin $creatorPlugin */
+            $creatorPlugin = $this->plugin->getCreatorPlugin();
+            $number = $creatorPlugin->handleCronJob();
+            if ($number == 0)
+            {
+                $result->setStatus(ilCronJobResult::STATUS_NO_ACTION);
+                $result->setMessage($this->plugin->txt('no_archive_created'));
+            }
+            elseif ($number == 1)
+            {
+                $result->setStatus(ilCronJobResult::STATUS_OK);
+                $result->setMessage($this->plugin->txt('one_archive_created'));
 
-				}
-				else {
-					$result->setStatus(ilCronJobResult::STATUS_OK);
-					$result->setMessage(sprintf($this->plugin->txt('x_archives_created'), $number));
-				}
-				return $result;
-			}
-			catch (Exception $e) {
-				$result->setStatus(ilCronJobResult::STATUS_FAIL);
-				$result->setMessage($e->getMessage());
-				return $result;
-			}
+            }
+            else {
+                $result->setStatus(ilCronJobResult::STATUS_OK);
+                $result->setMessage(sprintf($this->plugin->txt('x_archives_created'), $number));
+            }
+
+            return $result;
 		}
 	}
 

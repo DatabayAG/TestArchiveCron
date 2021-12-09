@@ -43,6 +43,11 @@ See the documentation of the TestArchiveCreator plugin.
 
 VERSIONS
 --------
+
+1.3.0 for ILIAS 7 (2021-12-09)
+- new version for ILIAS 7
+- removed unneccessay catching of exceptions
+
 1.1.1 for ILIAS 5.2 and 5.3 (2018-07-18)
 - set the last run date for schedule initialisation
 
