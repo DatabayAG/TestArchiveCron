@@ -13,17 +13,17 @@ class ilTestArchiveCronJob  extends ilCronJob
 		$this->plugin = $plugin;
 	}
 
-	public function getId()
+	public function getId() : string
 	{
 		return "test_archive_cron";
 	}
 
-	public function getTitle()
+	public function getTitle() : string
 	{
 		return $this->plugin->txt('job_title');
 	}
 
-	public function getDescription()
+	public function getDescription() : string
 	{
 		if (!$this->plugin->checkCreatorPluginActive()) {
 			return $this->plugin->txt('message_creator_plugin_missing');
@@ -31,27 +31,27 @@ class ilTestArchiveCronJob  extends ilCronJob
 		return $this->plugin->txt('job_description');
 	}
 
-	public function getDefaultScheduleType()
+	public function getDefaultScheduleType() : int
 	{
 		return self::SCHEDULE_TYPE_IN_HOURS;
 	}
 
-	public function getDefaultScheduleValue()
+	public function getDefaultScheduleValue() : int
 	{
 		return 1;
 	}
 
-	public function hasAutoActivation()
+	public function hasAutoActivation() : bool
 	{
 		return true;
 	}
 
-	public function hasFlexibleSchedule()
+	public function hasFlexibleSchedule() : bool
 	{
 		return true;
 	}
 
-	public function hasCustomSettings()
+	public function hasCustomSettings() : bool
 	{
 		return true;
 	}
@@ -60,7 +60,7 @@ class ilTestArchiveCronJob  extends ilCronJob
 	 * Defines whether or not a cron job can be started manually
 	 * @return bool
 	 */
-	public function isManuallyExecutable()
+	public function isManuallyExecutable() : bool
 	{
 		if (!$this->plugin->checkCreatorPluginActive()) {
 			return false;
@@ -72,7 +72,7 @@ class ilTestArchiveCronJob  extends ilCronJob
 	 * Run the cron job
 	 * @return ilCronJobResult
 	 */
-	public function run()
+	public function run() : ilCronJobResult
 	{
 		$result = new ilCronJobResult();
 
@@ -114,7 +114,7 @@ class ilTestArchiveCronJob  extends ilCronJob
 	 * @param ilPropertyFormGUI $a_form
 	 * @throws ilDateTimeException
 	 */
-	public function addCustomSettingsToForm(ilPropertyFormGUI $a_form)
+	public function addCustomSettingsToForm(ilPropertyFormGUI $a_form) : void
 	{
 		$setrun = new ilCheckboxInputGUI($this->plugin->txt('set_last_run'), 'set_last_run');
 		$setrun->setInfo($this->plugin->txt('set_last_run_info'));
@@ -134,7 +134,7 @@ class ilTestArchiveCronJob  extends ilCronJob
 	 * @param ilPropertyFormGUI $a_form
 	 * @return boolean
 	 */
-	public function saveCustomSettings(ilPropertyFormGUI $a_form)
+	public function saveCustomSettings(ilPropertyFormGUI $a_form) : bool
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
@@ -146,6 +146,7 @@ class ilTestArchiveCronJob  extends ilCronJob
 
 			/** @var ilDateTime $date */
 			$date = $lastrun->getDate();
+            $date->switchTimeZone($DIC->user()->getTimeZone());
 
 			if (isset($date)) {
 
@@ -172,11 +173,15 @@ class ilTestArchiveCronJob  extends ilCronJob
 	 */
 	public function getLastRun()
 	{
-		$rows = ilCronManager::getCronJobData($this->getId());
+        global $DIC;
+
+        $repo = $DIC->cron()->repository();
+
+		$rows = $repo->getCronJobData($this->getId());
 		$ts = $rows[0]['job_result_ts'];
 
 		if ($ts > 0) {
-			return new ilDateTime($ts, IL_CAL_UNIX);
+			return new ilDateTime($ts, IL_CAL_UNIX, $DIC->user()->getTimeZone());
 		}
 		return null;
 	}

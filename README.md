@@ -44,6 +44,10 @@ See the documentation of the TestArchiveCreator plugin.
 VERSIONS
 --------
 
+1.5.0 for ILIAS 8 (2023-05-11)
+- new version for ILIAS 8
+- works with TestArchiveCreator >= 1.5.1
+
 1.3.0 for ILIAS 7 (2021-12-09)
 - new version for ILIAS 7
 - removed unneccessay catching of exceptions
