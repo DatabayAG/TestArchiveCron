@@ -29,6 +29,10 @@ class ilTestArchiveCronPlugin extends ilCronHookPlugin
 	{
         global $DIC;
 
+        if ($this->isActive()) {
+            return false;
+        }
+
 		if (!$this->checkCreatorPluginActive()) {
 			throw new ilPluginException($this->txt("message_creator_plugin_missing"));
 			return false;
@@ -55,16 +59,22 @@ class ilTestArchiveCronPlugin extends ilCronHookPlugin
 	 */
 	public function getCreatorPlugin() : ?ilPlugin
 	{
+        /** @var \ILIAS\DI\Container $DIC */
         global $DIC;
 
-        /** @var ilComponentFactory $factory */
-        $factory = $DIC["component.factory"];
+        try {
+            /** @var ilComponentFactory $factory */
+            $factory = $DIC["component.factory"];
 
-        /** @var ilPlugin $plugin */
-        Foreach ($factory->getActivePluginsInSlot('uihk') as $plugin) {
-            if ($plugin->getPluginName() == 'TestArchiveCreator') {
-                return $plugin;
+            /** @var ilPlugin $plugin */
+            Foreach ($factory->getActivePluginsInSlot('uihk') as $plugin) {
+                if ($plugin->getPluginName() == 'TestArchiveCreator') {
+                    return $plugin;
+                }
             }
+        }
+        catch (Exception $e) {
+            return null;
         }
 
         return null;
