@@ -2,7 +2,6 @@
 
 // Copyright (c) 2018 Institut fuer Lern-Innovation, Friedrich-Alexander-Universitaet Erlangen-Nuernberg, GPLv3, see LICENSE
 
-include_once("./Services/Cron/classes/class.ilCronHookPlugin.php");
 
 class ilTestArchiveCronPlugin extends ilCronHookPlugin
 {
@@ -16,7 +15,7 @@ class ilTestArchiveCronPlugin extends ilCronHookPlugin
         return array($this->getCronJobInstance('test_archive_cron'));
     }
 
-    public function getCronJobInstance($a_job_id): ilCronJob
+    public function getCronJobInstance(string $jobId): ilCronJob
     {
         return new ilTestArchiveCronJob($this);
     }

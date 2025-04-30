@@ -116,7 +116,6 @@ class ilTestArchiveCronJob extends ilCronJob
 
         $lastrun = new ilDateTimeInputGUI($this->plugin->txt('last_run'), 'last_run');
         $lastrun->setShowTime(true);
-        $lastrun->setShowSeconds(false);
         $lastrun->setMinuteStepSize(10);
         $lastrun->setDate($this->getLastRun());
         $setrun->addSubItem($lastrun);
