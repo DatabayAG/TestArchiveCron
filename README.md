@@ -14,7 +14,7 @@ https://github.com/DatabayAG/TestArchiveCreator
 
 ## Installation
 1. Put the content of the plugin directory in a subdirectory under your ILIAS main directory:
-Customizing/global/plugins/Services/Cron/CronHook/TestArchiveCron
+public/Customizing/global/plugins/Services/Cron/CronHook/TestArchiveCron
 2. Run `composer du` in the main directory of your ILIAS installation
 3. Go to Administration > Extending ILIAS > Plugins
 4. Install and activate the plugin
