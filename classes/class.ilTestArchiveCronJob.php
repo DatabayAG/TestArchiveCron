@@ -171,7 +171,7 @@ class ilTestArchiveCronJob extends ilCronJob
         $repo = $DIC->cron()->repository();
 
         $rows = $repo->getCronJobData($this->getId());
-        $ts = $rows[0]['job_result_ts'];
+        $ts = $rows[0]['job_result_ts'] ?? 0;
 
         if ($ts > 0) {
             return new ilDateTime($ts, IL_CAL_UNIX, $DIC->user()->getTimeZone());
