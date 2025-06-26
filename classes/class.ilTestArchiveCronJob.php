@@ -6,12 +6,20 @@ use ILIAS\Cron\Schedule\CronJobScheduleType;
 
 class ilTestArchiveCronJob extends ilCronJob
 {
-    /** @var  ilTestArchiveCronPlugin */
-    protected $plugin;
+    private ilCronJobRepository $repository;
+    private ilTestArchiveCronPlugin $plugin;
+    private ilObjUser $user;
+    private ?ilDateTime $last_run = null;
+    private bool $is_active = false;
+    private $loaded = false;
 
     public function __construct($plugin)
     {
+        global $DIC;
+
         $this->plugin = $plugin;
+        $this->user = $DIC->user();
+        $this->repository = $DIC->cron()->repository();
     }
 
     public function getId(): string
@@ -57,10 +65,6 @@ class ilTestArchiveCronJob extends ilCronJob
         return true;
     }
 
-    /**
-     * Defines whether or not a cron job can be started manually
-     * @return bool
-     */
     public function isManuallyExecutable(): bool
     {
         if (!$this->plugin->checkCreatorPluginActive()) {
@@ -69,10 +73,6 @@ class ilTestArchiveCronJob extends ilCronJob
         return parent::isManuallyExecutable();
     }
 
-    /**
-     * Run the cron job
-     * @return ilCronJobResult
-     */
     public function run(): ilCronJobResult
     {
         $result = new ilCronJobResult();
@@ -101,13 +101,6 @@ class ilTestArchiveCronJob extends ilCronJob
         }
     }
 
-
-    /**
-     * Add custom settings to form
-     *
-     * @param ilPropertyFormGUI $a_form
-     * @throws ilDateTimeException
-     */
     public function addCustomSettingsToForm(ilPropertyFormGUI $a_form): void
     {
         $setrun = new ilCheckboxInputGUI($this->plugin->txt('set_last_run'), 'set_last_run');
@@ -121,61 +114,74 @@ class ilTestArchiveCronJob extends ilCronJob
         $setrun->addSubItem($lastrun);
     }
 
-    /**
-     * Save custom settings
-     *
-     * @param ilPropertyFormGUI $a_form
-     * @return boolean
-     */
     public function saveCustomSettings(ilPropertyFormGUI $a_form): bool
     {
-        global $DIC;
-        $ilDB = $DIC->database();
-        $ilUser = $DIC->user();
-
         if ($a_form->getInput('set_last_run')) {
-            /** @var ilDateTimeInputGUI $lastrun */
-            $lastrun = $a_form->getItemByPostVar('last_run');
+            /** @var ilDateTimeInputGUI $last_run */
+            $last_run = $a_form->getItemByPostVar('last_run');
 
             /** @var ilDateTime $date */
-            $date = $lastrun->getDate();
-            $date->switchTimeZone($DIC->user()->getTimeZone());
+            $date = $last_run->getDate();
 
             if (isset($date)) {
+                $when = DateTimeImmutable::createFromFormat('U', (string) $date->getUnixTime());
 
-                $sql = "UPDATE cron_job SET " .
-                    " job_result_status = " . $ilDB->quote(null, "integer") .
-                    " , job_result_user_id = " . $ilDB->quote($ilUser->getId(), "integer") .
-                    " , job_result_code = " . $ilDB->quote(ilCronJobResult::CODE_MANUAL_RESET, "text") .
-                    " , job_result_message = " . $ilDB->quote('', "text") .
-                    " , job_result_type = " . $ilDB->quote(1, "integer") .
-                    " , job_result_ts = " . $ilDB->quote($date->getUnixTime(), "integer") .
-                    " , job_result_dur = " . $ilDB->quote(0, "integer") .
-                    " WHERE job_id = " . $ilDB->quote($this->getId(), "text");
-                $ilDB->manipulate($sql);
+                $result = new ilCronJobResult();
+                $result->setStatus(ilCronJobResult::STATUS_RESET);
+                $result->setCode(ilCronJobResult::CODE_MANUAL_RESET);
+                $result->setMessage('');
+                $result->setDuration(0);
+
+                $this->repository->updateJobResult($this, $when, $this->user, $result);
             }
         }
 
         return true;
     }
 
-    /**
-     * get the date of the last run
-     * @return ilDateTime|null
-     * @throws ilDateTimeException
-     */
-    public function getLastRun()
+    public function loadData(): void
     {
-        global $DIC;
+        if (!$this->loaded) {
+            $rows = $this->repository->getCronJobData($this->getId());
+            if (isset($rows[0])) {
+                $data = $rows[0];
 
-        $repo = $DIC->cron()->repository();
+                $this->is_active = (bool) ($data['job_status'] ?? false);
 
-        $rows = $repo->getCronJobData($this->getId());
-        $ts = $rows[0]['job_result_ts'] ?? 0;
+                $this->setSchedule(
+                    CronJobScheduleType::tryFrom((int) ($data['schedule_type'] ?? 0)),
+                    (int) ($data['schedule_value'] ?? 0)
+                );
 
-        if ($ts > 0) {
-            return new ilDateTime($ts, IL_CAL_UNIX, $DIC->user()->getTimeZone());
+                $ts = $data['job_result_ts'] ?? 0;
+                if ($ts > 0) {
+                    $this->last_run = new ilDateTime($ts, IL_CAL_UNIX, $this->user->getTimeZone());
+                }
+            }
+            $this->loaded = true;
         }
-        return null;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
+    }
+
+    public function getLastRun(): ?ilDateTime
+    {
+        $this->loadData();
+        return $this->last_run;
+    }
+
+    public function getScheduleType(): ?CronJobScheduleType
+    {
+       $this->loadData();
+       return parent::getScheduleType();
+    }
+
+    public function getScheduleValue(): ?int
+    {
+        $this->loadData();
+        return parent::getScheduleValue();
     }
 }
