@@ -2,6 +2,9 @@
 
 Plugin versions for different ILIAS releases are provided in separate branches of this repository.
 
+## 10.0.0 for ILIAS 10 (2025-11-05)
+- compatibility with ILIAS 10 and higher, PHP 8.12 and 8.3
+
 ## 9.0.0 for ILIAS 9 (2024-11-07)
 - compatibility with ILIAS 9.5 and higher, PHP 8.1 and 8.2
 - applied ILIAS coding style
